@@ -1,6 +1,6 @@
 import React from 'react';
-import { Activity, Pause, Play } from 'lucide-react';
-import type { MediaState } from '../types/media.ts';
+import { Activity, Play, Pause } from 'lucide-react';
+import type { MediaState } from '../types/media';
 
 interface StatusBarProps {
   mediaState: MediaState;
@@ -9,50 +9,65 @@ interface StatusBarProps {
 export const StatusBar: React.FC<StatusBarProps> = ({ mediaState }) => {
   const activeSource = mediaState.sources.find(s => s.id === mediaState.activeSource);
   const playingSources = mediaState.sources.filter(s => s.isPlaying);
+  const pausedSources = mediaState.sources.filter(s => s.isPaused);
 
   return (
-    <div className="bg-gray-900 border-t border-gray-700 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Activity className="w-4 h-4 text-blue-400" />
-            <span className="text-sm text-gray-300">MediaSense Status</span>
+    <div className="card bg-elevated">
+      <div className="flex-between">
+        {/* Left: Current Active Source */}
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-tertiary rounded-lg border border-accent/30">
+            <Activity className="w-5 h-5 text-accent" />
           </div>
-
-          {activeSource ? (
-            <div className="flex items-center space-x-2">
-              {activeSource.isPlaying ? (
-                <Play className="w-3 h-3 text-green-400" />
-              ) : (
-                <Pause className="w-3 h-3 text-yellow-400" />
-              )}
-              <span className="text-sm text-white">
-                {activeSource.name}: {activeSource.currentTrack}
-              </span>
-            </div>
-          ) : (
-            <span className="text-sm text-gray-400">No active media</span>
-          )}
+          <div>
+            {activeSource ? (
+              <>
+                <p className="text-body font-medium text-primary">
+                  Active: {activeSource.name}
+                </p>
+                <p className="text-caption text-secondary">
+                  {activeSource.currentTrack || 'No track selected'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-body font-medium text-primary">No Active Source</p>
+                <p className="text-caption text-secondary">All sources are paused</p>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="text-xs text-gray-400">
-            Active Sources: {playingSources.length}
-          </div>
-          <div className="flex space-x-1">
-            {mediaState.sources.map(source => (
-              <div
-                key={source.id}
-                className={`w-2 h-2 rounded-full transition-colors duration-200 ${source.isPlaying
-                  ? 'bg-green-400'
-                  : source.isPaused
-                    ? 'bg-yellow-400'
-                    : 'bg-gray-600'
-                  }`}
-                title={`${source.name} - ${source.isPlaying ? 'Playing' : source.isPaused ? 'Paused' : 'Stopped'}`}
-              />
-            ))}
-          </div>
+        {/* Right: Status Overview */}
+        <div className="flex items-center gap-6">
+          {playingSources.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="status-indicator status-playing"></div>
+              <Play className="w-4 h-4 text-success" />
+              <span className="text-caption font-medium text-success">
+                {playingSources.length} Playing
+              </span>
+            </div>
+          )}
+
+          {pausedSources.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="status-indicator status-paused"></div>
+              <Pause className="w-4 h-4 text-warning" />
+              <span className="text-caption font-medium text-warning">
+                {pausedSources.length} Paused
+              </span>
+            </div>
+          )}
+
+          {/* Priority Indicator */}
+          {activeSource && (
+            <div className="surface px-3 py-1 rounded-lg border border-accent/20">
+              <span className="text-caption font-medium text-accent">
+                Priority {activeSource.priority}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

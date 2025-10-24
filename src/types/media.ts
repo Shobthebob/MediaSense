@@ -4,6 +4,7 @@ export interface MediaSource {
   type: 'video' | 'music';
   isPlaying: boolean;
   isPaused: boolean;
+  manuallyPaused?: boolean; // Track if user manually paused this source
   currentTrack?: string;
   duration?: number;
   currentTime?: number;

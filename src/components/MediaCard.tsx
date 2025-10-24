@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Volume2, Settings, Monitor, Music } from 'lucide-react';
+import { Play, Pause, Volume2, Monitor, Music } from 'lucide-react';
 import type { MediaSource } from '../types/media';
 
 interface MediaCardProps {
@@ -21,10 +21,10 @@ export const MediaCard: React.FC<MediaCardProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getStatusColor = () => {
-    if (source.isPlaying) return 'text-green-400';
-    if (isActive) return 'text-blue-400';
-    return 'text-gray-400';
+  const getStatusIndicator = () => {
+    if (source.isPlaying) return 'status-playing';
+    if (source.isPaused) return 'status-paused';
+    return 'status-stopped';
   };
 
   const getStatusText = () => {
@@ -33,80 +33,94 @@ export const MediaCard: React.FC<MediaCardProps> = ({
     return 'Stopped';
   };
 
+  const progressPercentage = source.duration
+    ? ((source.currentTime || 0) / source.duration) * 100
+    : 0;
+
   return (
-    <div className={`bg-gray-800 rounded-xl p-6 transition-all duration-300 ${isActive ? 'ring-2 ring-blue-500 shadow-lg shadow-blue-500/20' : 'hover:bg-gray-750'
-      }`}>
+    <div className={`card ${isActive ? 'border-accent shadow-accent' : ''} animate-fade-in`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className={`p-2 rounded-lg ${source.type === 'video' ? 'bg-red-500/20' : 'bg-green-500/20'}`}>
+      <div className="flex-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-tertiary rounded-lg border border-muted">
             {source.type === 'video' ? (
-              <Monitor className={`w-5 h-5 ${source.type === 'video' ? 'text-red-400' : 'text-green-400'}`} />
+              <Monitor className="w-5 h-5 text-error" />
             ) : (
-              <Music className="w-5 h-5 text-green-400" />
+              <Music className="w-5 h-5 text-success" />
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{source.name}</h3>
-            <span className={`text-sm ${getStatusColor()}`}>{getStatusText()}</span>
+            <h3 className="text-heading text-primary">{source.name}</h3>
+            <div className="flex items-center gap-2">
+              <div className={`status-indicator ${getStatusIndicator()}`}></div>
+              <span className="text-caption text-secondary">{getStatusText()}</span>
+              <span className="text-caption text-muted">• Priority {source.priority}</span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-xs text-gray-400">Priority: {source.priority}</span>
-          <Settings className="w-4 h-4 text-gray-400 cursor-pointer hover:text-white" />
         </div>
       </div>
 
       {/* Current Track */}
-      <div className="mb-4">
-        <p className="text-gray-300 text-sm mb-1">Now Playing:</p>
-        <p className="text-white font-medium truncate">{source.currentTrack}</p>
-      </div>
+      {source.currentTrack && (
+        <div className="mb-4">
+          <p className="text-body text-primary font-medium mb-1">Now Playing</p>
+          <p className="text-caption text-secondary line-clamp-2">{source.currentTrack}</p>
+        </div>
+      )}
 
       {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
-          <span>{formatTime(source.currentTime || 0)}</span>
-          <span>{formatTime(source.duration || 0)}</span>
+      {source.duration && (
+        <div className="mb-4">
+          <div className="progress mb-2">
+            <div
+              className="progress-fill"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+          <div className="flex-between text-caption text-muted">
+            <span>{formatTime(source.currentTime || 0)}</span>
+            <span>{formatTime(source.duration)}</span>
+          </div>
         </div>
-        <div className="w-full bg-gray-700 rounded-full h-1">
-          <div
-            className={`h-1 rounded-full transition-all duration-300 ${source.isPlaying ? 'bg-blue-500' : 'bg-gray-500'
-              }`}
-            style={{
-              width: source.duration ? `${((source.currentTime || 0) / source.duration) * 100}%` : '0%'
-            }}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Controls */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onTogglePlay}
-          className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 ${source.isPlaying
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-            }`}
-        >
-          {source.isPlaying ? (
-            <Pause className="w-5 h-5" />
-          ) : (
-            <Play className="w-5 h-5 ml-0.5" />
-          )}
-        </button>
+      <div className="flex-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onTogglePlay}
+            className={`btn ${source.isPlaying ? 'btn-secondary' : 'btn-primary'} btn-icon`}
+            aria-label={source.isPlaying ? 'Pause' : 'Play'}
+          >
+            {source.isPlaying ? (
+              <Pause className="w-5 h-5" />
+            ) : (
+              <Play className="w-5 h-5 ml-0.5" />
+            )}
+          </button>
 
-        <div className="flex items-center space-x-3">
-          <Volume2 className="w-4 h-4 text-gray-400" />
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={source.volume}
-            onChange={(e) => onVolumeChange(parseInt(e.target.value))}
-            className="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-          />
-          <span className="text-xs text-gray-400 w-8">{source.volume}%</span>
+          {source.isPlaying && (
+            <div className="status-indicator status-playing animate-pulse-subtle"></div>
+          )}
+        </div>
+
+        {/* Volume Control */}
+        <div className="flex items-center gap-3">
+          <Volume2 className="w-4 h-4 text-tertiary" />
+          <div className="w-20">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={source.volume}
+              onChange={(e) => onVolumeChange(parseInt(e.target.value))}
+              className="slider w-full"
+              aria-label={`Volume for ${source.name}`}
+            />
+          </div>
+          <span className="text-caption text-muted font-mono w-8 text-right">
+            {source.volume}%
+          </span>
         </div>
       </div>
     </div>

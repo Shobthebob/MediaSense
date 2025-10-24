@@ -8,6 +8,7 @@ const initialSources: MediaSource[] = [
     type: 'video',
     isPlaying: false,
     isPaused: true,
+    manuallyPaused: false,
     currentTrack: 'No video selected',
     duration: 0,
     currentTime: 0,
@@ -20,6 +21,7 @@ const initialSources: MediaSource[] = [
     type: 'music',
     isPlaying: false,
     isPaused: true,
+    manuallyPaused: false,
     currentTrack: 'No track selected',
     duration: 0,
     currentTime: 0,
@@ -52,10 +54,10 @@ export const useMediaManager = () => {
       // Find other playing sources and pause them based on priority
       const updatedSources = prev.sources.map(s => {
         if (s.id === sourceId) {
-          return { ...s, isPlaying: true, isPaused: false };
+          return { ...s, isPlaying: true, isPaused: false, manuallyPaused: false };
         } else if (s.isPlaying && s.priority > source.priority) {
-          // Lower priority sources get paused
-          return { ...s, isPlaying: false, isPaused: true };
+          // Lower priority sources get automatically paused (not manually)
+          return { ...s, isPlaying: false, isPaused: true, manuallyPaused: false };
         }
         return s;
       });
@@ -71,18 +73,30 @@ export const useMediaManager = () => {
 
   const pauseSource = useCallback((sourceId: string) => {
     setMediaState(prev => {
+      const currentSource = prev.sources.find(s => s.id === sourceId);
+      if (!currentSource) return prev;
+
+      // Mark this source as manually paused
       const updatedSources = prev.sources.map(s =>
         s.id === sourceId
-          ? { ...s, isPlaying: false, isPaused: true }
+          ? { ...s, isPlaying: false, isPaused: true, manuallyPaused: true }
           : s
       );
 
-      // Check if we should resume any paused sources
-      const currentSource = prev.sources.find(s => s.id === sourceId);
-      if (currentSource?.isPlaying) {
-        // Find highest priority paused source to resume
+      // Only resume other sources if the paused source was the currently active one
+      // AND it was the highest priority playing source
+      if (currentSource.isPlaying && prev.activeSource === sourceId) {
+        // Find the highest priority paused source that has content to resume
+        // BUT only resume sources that were NOT manually paused
         const sourcesToResume = updatedSources
-          .filter(s => s.id !== sourceId && s.isPaused && s.currentTrack !== `No ${s.type === 'video' ? 'video' : 'track'} selected`)
+          .filter(s =>
+            s.id !== sourceId &&
+            s.isPaused &&
+            !s.manuallyPaused && // Only resume automatically paused sources
+            s.currentTrack !== `No ${s.type === 'video' ? 'video' : 'track'} selected` &&
+            s.currentTrack !== 'No video selected' &&
+            s.currentTrack !== 'No track selected'
+          )
           .sort((a, b) => a.priority - b.priority);
 
         if (sourcesToResume.length > 0) {
@@ -91,6 +105,7 @@ export const useMediaManager = () => {
             if (s.id === resumeSource.id) {
               s.isPlaying = true;
               s.isPaused = false;
+              s.manuallyPaused = false;
             }
           });
         }

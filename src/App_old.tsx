@@ -76,7 +76,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center" style={{ gap: '2rem' }}>
+            <div className="flex items-center gap-4">
               <div className="surface px-4 py-2 rounded-lg border border-warning/30">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-warning" />
@@ -96,7 +96,7 @@ function App() {
 
       {/* Main Content */}
       <main className="container py-8">
-        {/* 1. How MediaSense Works */}
+        {/* Info Banner */}
         <section className="mb-8">
           <div className="card bg-elevated border-accent/20">
             <div className="flex items-start gap-4">
@@ -106,8 +106,8 @@ function App() {
               <div className="flex-1">
                 <h3 className="text-heading text-primary mb-3">How MediaSense Works</h3>
                 <p className="text-body text-secondary leading-relaxed mb-4">
-                  MediaSense intelligently manages your media playback with <strong className="text-accent">priority-based control</strong>.
-                  When you start playing one source, other sources are automatically paused based on priority.
+                  MediaSense intelligently manages your media playback with <strong className="text-accent">priority-based control</strong>. 
+                  When you start playing one source, other sources are automatically paused based on priority. 
                   This prevents audio overlap and ensures a <strong className="text-success">seamless experience</strong> across different media applications.
                 </p>
                 <div className="flex items-center gap-6">
@@ -125,64 +125,7 @@ function App() {
           </div>
         </section>
 
-        {/* 2. Demo Instructions */}
-        <section className="mb-8" style={{ marginTop: '2rem' }}>
-          <div className="card">
-            <h3 className="text-heading text-primary mb-6">Demo Instructions</h3>
-            <div className="grid-2">
-              <div className="stack">
-                <h4 className="text-body font-semibold text-accent mb-4 flex items-center">
-                  <div className="status-indicator status-playing mr-3"></div>
-                  Try This:
-                </h4>
-                <ul className="stack-sm text-secondary">
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    <span>Start playing <strong className="text-accent">YouTube</strong> (Priority 1)</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    <span>Notice <strong className="text-success">Spotify</strong> automatically pauses</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    <span>Pause YouTube and see Spotify <strong className="text-warning">resume</strong></span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    <span>Adjust <strong className="text-accent">priorities</strong> in settings</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="stack">
-                <h4 className="text-body font-semibold text-success mb-4 flex items-center">
-                  <div className="status-indicator status-playing mr-3"></div>
-                  Desktop Features:
-                </h4>
-                <ul className="stack-sm text-secondary">
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    <span><strong className="text-success">System tray</strong> integration</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    <span><strong className="text-success">Global hotkey</strong> support</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    <span><strong className="text-success">API integration</strong> with real apps</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    <span><strong className="text-success">Cross-platform</strong> compatibility</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. Media Sources Grid */}
+        {/* Media Sources Grid */}
         <section className="mb-8">
           <h2 className="text-title text-primary mb-6">Media Sources</h2>
           <div className="grid-2">
@@ -198,12 +141,70 @@ function App() {
           </div>
         </section>
 
-        {/* 4. Active Media Status - Centered */}
-        <section className="mb-8">
-          <h2 className="text-title text-primary mb-6">Active Media Status</h2>
-          <StatusBar mediaState={mediaState} />
-        </section>
+          {/* Demo Instructions */}
+          <div className="glass-card rounded-2xl p-8 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Demo Instructions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h4 className="font-bold text-blue-400 text-lg text-glow mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3 status-dot playing"></span>
+                    Try This:
+                  </h4>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
+                      <span>Start playing <span className="text-blue-400 font-semibold">YouTube</span> (Priority 1)</span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
+                      <span>Notice <span className="text-green-400 font-semibold">Spotify</span> automatically pauses</span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
+                      <span>Pause YouTube and see Spotify <span className="text-yellow-400 font-semibold">resume</span></span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
+                      <span>Adjust volume and priority settings</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="font-bold text-green-400 text-lg text-glow-green mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3 status-dot playing"></span>
+                    Desktop Features:
+                  </h4>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"></span>
+                      <span><span className="text-green-400 font-semibold">System tray</span> integration</span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"></span>
+                      <span><span className="text-green-400 font-semibold">Global hotkey</span> support</span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"></span>
+                      <span><span className="text-green-400 font-semibold">API integration</span> with real apps</span>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"></span>
+                      <span><span className="text-green-400 font-semibold">Cross-platform</span> compatibility</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+
+      {/* Status Bar */}
+      <StatusBar mediaState={mediaState} />
 
       {/* Settings Panel */}
       {showSettings && (
